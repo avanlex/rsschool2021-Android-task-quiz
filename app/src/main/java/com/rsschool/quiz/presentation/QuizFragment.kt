@@ -48,7 +48,7 @@ class QuizFragment: Fragment(R.layout.fragment_quiz)/*TODO: , LifecycleObserver*
         initView()
         viewModel.loadQuestions()
         viewModel.questionList.observe(viewLifecycleOwner, this::loadQuestionList)
-//        viewModel.question.observe(viewLifecycleOwner, this::loadQuestion)
+        viewModel.question.observe(viewLifecycleOwner, this::loadQuestion)
     }
 
 
@@ -57,7 +57,7 @@ class QuizFragment: Fragment(R.layout.fragment_quiz)/*TODO: , LifecycleObserver*
             viewModel.getQuestionById(0)
     }
 
-        private fun loadQuestion(question: Question) {
+    private fun loadQuestion(question: Question) {
         if (question.id != INVALID_QUESTION){
             bindQuestion(question)
         }
@@ -65,33 +65,30 @@ class QuizFragment: Fragment(R.layout.fragment_quiz)/*TODO: , LifecycleObserver*
 
     private fun bindQuestion(question: Question){
         binding.question.text = question.text
+        binding.toolbar.title = "Вопрос ${viewModel.currentQuestionIndex + 1}"
         binding.radioGroup.forEachIndexed { index, rbView ->
             (rbView as RadioButton).text = question.choose[index]
         }
     }
 
     private fun initView() {
-
         viewModel.getPreviousQuestion()
         viewModel.getQuestionById(0)
 
-        binding.nextButton.setOnClickListener{
-            viewModel.checkAnswer(0, binding.radioGroup.checkedRadioButtonId)
-            viewModel.getNextQuestion()
-        }
-
-        binding.previousButton.setOnClickListener{
-            viewModel.getPreviousQuestion()
-        }
+        binding.nextButton.setOnClickListener{ onNextButtonClick() }
+        binding.previousButton.setOnClickListener{ onPreviousButtonClick() }
     }
 
-    private fun setQuestionList(list: List<Question>){
-        // TODO: Use the Quiz
-        Log.d("LIST:", list.joinToString(" "))
+    private fun onNextButtonClick() {
+        viewModel.checkAnswer(0, binding.radioGroup.checkedRadioButtonId)
+        viewModel.getNextQuestion()
+    }
+
+    private fun onPreviousButtonClick() {
+        viewModel.getPreviousQuestion()
     }
 
     companion object {
-
         @JvmStatic
         fun newInstance(previousResult: Int): QuizFragment {
             val fragment = QuizFragment()

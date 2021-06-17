@@ -21,7 +21,9 @@ class QuizViewModel(
     private val _mutableQuestionList = MutableLiveData<List<Question>>(emptyList())
     val questionList: LiveData<List<Question>> get() = _mutableQuestionList
     private var _questionList : List<Question>? = null
-    private var _currentQuestion = 0
+    var currentQuestionIndex = 0
+        private set
+    var quizSize = 0
     //private val _currentQuestion = MutableLiveData(0)
 
     fun loadQuestions() {
@@ -49,19 +51,10 @@ class QuizViewModel(
     }
 
     fun getQuestionById(questionId: Int) {
-//        if (_mutableQuestionList.value?.isNullOrEmpty() == false) {
-//            viewModelScope.launch {
-//                return@launch try {
-//                    _mutableQuestionList.value!![questionId]
-//                } catch (throwable: Throwable) {
-//                    Log.d(TAG, "Answer getting Error")
-//                } as Unit
-//            }
-//        }
-        if (!_questionList.isNullOrEmpty() && questionId >= 0) {
+        if (!_mutableQuestionList.value.isNullOrEmpty() && questionId >= 0) {
             viewModelScope.launch {
                 try {
-                    _mutableQuestion.postValue(_questionList!![questionId])
+                    _mutableQuestion.value = _mutableQuestionList.value!![questionId]
                 } catch (throwable: Throwable) {
                     Log.d(TAG, "Question getting Error")
                 }
@@ -70,11 +63,11 @@ class QuizViewModel(
     }
 
     fun getNextQuestion() {
-        getQuestionById(++_currentQuestion)
+        getQuestionById(++currentQuestionIndex)
     }
 
     fun getPreviousQuestion(){
-        getQuestionById(--_currentQuestion)
+        getQuestionById(--currentQuestionIndex)
     }
     // TODO: Implement the ViewModel
 
